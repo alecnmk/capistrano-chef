@@ -18,7 +18,8 @@ module Capistrano::Chef
     # TODO: This can only get a node's top-level attributes. Make it get nested
     # ones.
     attr = options.delete(:attribute) || :ipaddress
-    Chef::Search::Query.new.search(:node, query)[0].map {|n| n[attr] }
+    # WTF, options never passed
+    Chef::Search::Query.new.search(:node, query)[0].map {|n| n[:ec2][:public_hostname] }
   end
 
   def self.get_apps_data_bag_item(id)
