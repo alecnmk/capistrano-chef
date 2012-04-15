@@ -31,6 +31,13 @@ module Capistrano::Chef
     self.configure_chef
     configuration.set :capistrano_chef, self
     configuration.load do
+      def chef_server_private_ip(public_hostname)
+        servers = Chef::Search::Query.new.search(:node, "public_hostname:#{public_hostname}")[0]
+        raise "found more than 1 server for public hostname: #{public_hostname}" if servers.size > 1
+        raise "no server found for #{public_hostname} public hostname" if servers.empty?
+        servers[0][:cloud][:local_ipv4]
+      end #find_chef_server
+
       def chef_role(name, query = '*:*', options = {})
         role name, *(capistrano_chef.search_chef_nodes(query) + [options])
       end
